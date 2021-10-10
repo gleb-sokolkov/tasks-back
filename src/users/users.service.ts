@@ -1,3 +1,5 @@
+import { Role } from './../roles/roles.model';
+import { RolesService } from './../roles/roles.service';
 import { createUserDto, findOneParams, updateUserDto } from './dto/user.dto';
 import { User } from './users.model';
 import { BadRequestException, Injectable } from '@nestjs/common';
@@ -6,11 +8,16 @@ import { UniqueConstraintError } from 'sequelize';
 
 @Injectable()
 export class UsersService {
-  constructor(@InjectModel(User) private userRepository: typeof User) {}
+  constructor(
+    @InjectModel(User) private userRepository: typeof User,
+    private rolesService: RolesService,
+  ) {}
 
   async createUser(dto: createUserDto) {
     try {
       const user = await this.userRepository.create(dto);
+      const role = await this.rolesService.getRoleByValue('USER');
+      await user.$set('role', [role.id]);
       return user;
     } catch (e) {
       if (e instanceof UniqueConstraintError) {
@@ -23,12 +30,13 @@ export class UsersService {
   }
 
   async findAll() {
-    return this.userRepository.findAll();
+    return this.userRepository.findAll({ include: [Role] });
   }
 
   async findOne(params: findOneParams) {
     const user = await this.userRepository.findOne({
       where: { id: params.id },
+      include: [Role],
     });
     if (!user) {
       throw new BadRequestException(
