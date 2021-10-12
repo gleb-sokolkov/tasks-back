@@ -7,6 +7,8 @@ import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { RolesModule } from './roles/roles.module';
 import { ConfigModule } from '@nestjs/config';
+import { ColumnsModule } from './columns/columns.module';
+import { Column } from './columns/columns.model';
 import { RouterModule } from 'nest-router';
 import { routes } from './routes';
 
@@ -22,13 +24,14 @@ import { routes } from './routes';
       username: process.env.POSTGRES_USERNAME,
       password: process.env.POSTGRES_PASSWORD,
       database: process.env.POSTGRES_DATABASE,
-      models: [User, Role, UserRole],
+      models: [User, Role, UserRole, Column],
       autoLoadModels: true,
     }),
     RouterModule.forRoutes(routes),
     AuthModule,
     UsersModule,
     RolesModule,
+    ColumnsModule,
   ],
 })
 export class AppModule {}
