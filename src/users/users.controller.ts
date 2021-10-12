@@ -1,5 +1,6 @@
+import { AuthGuard } from './../auth/auth.guard';
 import { User } from './users.model';
-import { createUserDto, findOneParams, updateUserDto } from './dto/user.dto';
+import { changeRolesDto, createUserDto, findOneParams } from './dto/user.dto';
 import { UsersService } from './users.service';
 import {
   Body,
@@ -9,18 +10,24 @@ import {
   HttpCode,
   HttpStatus,
   Param,
+  Patch,
   Post,
   Put,
+  UseGuards,
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { RolesGuard } from 'src/roles/roles.guard';
+import { Roles } from 'src/roles/roles.decorator';
 
 @ApiTags('Пользователи')
-@Controller('users')
+@Controller()
 export class UsersController {
   constructor(private usersService: UsersService) {}
 
   @ApiOperation({ summary: 'Получить всех пользователей' })
   @ApiResponse({ status: HttpStatus.OK, type: [User] })
+  // @Roles()
+  // @UseGuards(AuthGuard, RolesGuard)
   @Get()
   @HttpCode(HttpStatus.OK)
   async getAll() {
@@ -29,7 +36,8 @@ export class UsersController {
 
   @ApiOperation({ summary: 'Получить существующего пользователя' })
   @ApiResponse({ status: HttpStatus.OK, type: User })
-  @Get(':id')
+  @UseGuards(AuthGuard)
+  @Get(':user_id')
   @HttpCode(HttpStatus.OK)
   async getOne(@Param() id: findOneParams) {
     return this.usersService.findOne(id);
@@ -37,6 +45,8 @@ export class UsersController {
 
   @ApiOperation({ summary: 'Создать нового пользователя' })
   @ApiResponse({ status: HttpStatus.CREATED, type: User })
+  @Roles('ADMIN')
+  @UseGuards(AuthGuard, RolesGuard)
   @Post()
   @HttpCode(HttpStatus.CREATED)
   async createUser(@Body() dto: createUserDto) {
@@ -45,17 +55,21 @@ export class UsersController {
 
   @ApiOperation({ summary: 'Обновить существующего пользователя' })
   @ApiResponse({ status: HttpStatus.OK, type: User })
-  @Put(':id')
+  @Roles('ADMIN')
+  @UseGuards(AuthGuard, RolesGuard)
+  @Put(':user_id')
   @HttpCode(HttpStatus.OK)
   async updateOne(
     @Param() findOneParams: findOneParams,
-    @Body() dto: updateUserDto,
+    @Body() dto: createUserDto,
   ) {
     return this.usersService.updateOne(findOneParams, dto);
   }
 
   @ApiOperation({ summary: 'Удалить всех пользователей' })
   @ApiResponse({ status: HttpStatus.OK })
+  @Roles('ADMIN')
+  @UseGuards(AuthGuard, RolesGuard)
   @Delete()
   @HttpCode(HttpStatus.OK)
   async deleteAll() {
@@ -64,9 +78,21 @@ export class UsersController {
 
   @ApiOperation({ summary: 'Удалить существующего пользователя' })
   @ApiResponse({ status: HttpStatus.OK })
-  @Delete(':id')
+  @Roles('ADMIN')
+  @UseGuards(AuthGuard, RolesGuard)
+  @Delete(':user_id')
   @HttpCode(HttpStatus.OK)
   async deleteOne(@Param() findOneParams: findOneParams) {
     await this.usersService.deleteOne(findOneParams);
+  }
+
+  @ApiOperation({ summary: 'Изменить права пользователя' })
+  @ApiResponse({ status: HttpStatus.OK })
+  @Roles('ADMIN')
+  @UseGuards(AuthGuard, RolesGuard)
+  @Patch(':user_id')
+  @HttpCode(HttpStatus.OK)
+  async patchRoles(@Body() dto: changeRolesDto, @Param() id: findOneParams) {
+    return await this.usersService.changeRoles(id, dto);
   }
 }

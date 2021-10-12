@@ -2,16 +2,18 @@ import { UserRole } from './roles/user-roles.model';
 import { Role } from './roles/roles.model';
 import { User } from './users/users.model';
 import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
 import { SequelizeModule } from '@nestjs/sequelize';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { RolesModule } from './roles/roles.module';
+import { ConfigModule } from '@nestjs/config';
+import { RouterModule } from 'nest-router';
+import { routes } from './routes';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
-      envFilePath: `.${process.env.NODE_ENV}.env`,
+      envFilePath: `${process.env.NODE_ENV}.env`,
     }),
     SequelizeModule.forRoot({
       dialect: 'postgres',
@@ -23,6 +25,8 @@ import { RolesModule } from './roles/roles.module';
       models: [User, Role, UserRole],
       autoLoadModels: true,
     }),
+    RouterModule.forRoutes(routes),
+    AuthModule,
     UsersModule,
     RolesModule,
   ],

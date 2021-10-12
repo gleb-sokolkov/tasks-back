@@ -1,6 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
 import {
   IsEmail,
+  IsNotEmpty,
+  IsOptional,
   IsString,
   Matches,
   MaxLength,
@@ -28,35 +30,24 @@ export class createUserDto {
   password: string;
 }
 
-export class updateUserDto {
+export class changeRolesDto {
   @ApiProperty({
-    example: 'email@email.domain',
-    description: 'Почта пользователя',
-    type: String,
+    example: ['ADMIN', 'USER'],
+    description: 'Права пользователя',
+    type: [String],
   })
-  @IsEmail()
-  email: string;
-
-  @ApiProperty({
-    example: 'Axs@xsa1sj',
-    description: 'Пароль пользователя',
-    minimum: 7,
-    maximum: 20,
-    type: String,
-  })
-  @IsString()
-  @MinLength(7)
-  @MaxLength(20)
-  password: string;
+  @IsNotEmpty()
+  roles: string[];
 }
 
 export class findOneParams {
   @ApiProperty({
     example: '1',
-    description: 'Уникальный идентификатор пользователя',
+    description: 'Уникальный идентификатор',
     type: String,
   })
+  @IsOptional()
   @IsString()
   @Matches(/^\d+$/)
-  id: string;
+  user_id: string;
 }

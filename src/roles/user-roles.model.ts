@@ -19,16 +19,11 @@ export class UserRole extends Model<UserRole> {
   })
   id: number;
 
-  @Index({
-    name: 'user-role',
-    unique: true,
-  })
   @ForeignKey(() => User)
   @Column({ type: DataType.INTEGER })
-  userID: string;
+  user_id: number;
 
-  @Index('user-role')
   @ForeignKey(() => Role)
   @Column({ type: DataType.INTEGER })
-  roleID: string;
+  role_id: number;
 }
