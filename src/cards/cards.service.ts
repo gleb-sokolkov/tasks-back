@@ -70,7 +70,7 @@ export class CardsService {
       return await card.save();
     } catch (ex) {
       throw new BadRequestException({
-        message: `Не удалось обновить колонку с id=${params.column_id} пользователя с id=${params.user_id}`,
+        message: `Не удалось обновить карточку с id=${params.card_id} пользователя с id=${params.user_id}`,
       });
     }
   }

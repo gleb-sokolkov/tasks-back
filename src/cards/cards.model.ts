@@ -5,13 +5,14 @@ import {
   DataType,
   BelongsTo,
   ForeignKey,
+  HasMany,
 } from 'sequelize-typescript';
 import { Column } from 'src/columns/columns.model';
+import { Comment } from 'src/comments/comments.model';
 
 interface createCardAttrs {
   name: string;
   description: string;
-  column_id: number;
 }
 
 @Table({ tableName: 'card' })
@@ -42,4 +43,7 @@ export class Card extends Model<Card, createCardAttrs> {
   @ForeignKey(() => Column)
   @column({ type: DataType.INTEGER, allowNull: false })
   column_id: number;
+
+  @HasMany(() => Comment)
+  comments: Comment[];
 }

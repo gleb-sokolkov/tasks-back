@@ -13,6 +13,8 @@ import { RouterModule } from 'nest-router';
 import { routes } from './routes';
 import { CardsModule } from './cards/cards.module';
 import { Card } from './cards/cards.model';
+import { CommentsModule } from './comments/comments.module';
+import { Comment } from './comments/comments.model';
 
 @Module({
   imports: [
@@ -26,7 +28,7 @@ import { Card } from './cards/cards.model';
       username: process.env.POSTGRES_USERNAME,
       password: process.env.POSTGRES_PASSWORD,
       database: process.env.POSTGRES_DATABASE,
-      models: [User, Role, UserRole, Column, Card],
+      models: [User, Role, UserRole, Column, Card, Comment],
       autoLoadModels: true,
     }),
     RouterModule.forRoutes(routes),
@@ -35,6 +37,7 @@ import { Card } from './cards/cards.model';
     RolesModule,
     ColumnsModule,
     CardsModule,
+    CommentsModule,
   ],
 })
 export class AppModule {}

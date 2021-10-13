@@ -1,6 +1,5 @@
 import { Module } from '@nestjs/common';
 import { SequelizeModule } from '@nestjs/sequelize';
-import { User } from 'src/users/users.model';
 import { UsersModule } from 'src/users/users.module';
 import { ColumnsController } from './columns.controller';
 import { Column } from './columns.model';

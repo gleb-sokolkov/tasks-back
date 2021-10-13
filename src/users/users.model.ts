@@ -10,6 +10,7 @@ import {
 } from 'sequelize-typescript';
 import { UserRole } from 'src/roles/user-roles.model';
 import { Column as column } from 'src/columns/columns.model';
+import { Comment } from 'src/comments/comments.model';
 
 interface UserCreationAttrs {
   email: string;
@@ -61,4 +62,7 @@ export class User extends Model<User, UserCreationAttrs> {
 
   @HasMany(() => column)
   columns: column[];
+
+  @HasMany(() => Comment)
+  comments: Comment[];
 }

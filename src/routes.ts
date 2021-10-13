@@ -4,6 +4,7 @@ import { Routes } from 'nest-router';
 import { ColumnsModule } from './columns/columns.module';
 import { UsersModule } from './users/users.module';
 import { CardsModule } from './cards/cards.module';
+import { CommentsModule } from './comments/comments.module';
 
 export const routes: Routes = [
   {
@@ -17,6 +18,12 @@ export const routes: Routes = [
           {
             path: '/:column_id/cards',
             module: CardsModule,
+            children: [
+              {
+                path: '/:card_id/comments',
+                module: CommentsModule,
+              },
+            ],
           },
         ],
       },
