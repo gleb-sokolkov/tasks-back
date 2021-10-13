@@ -3,11 +3,13 @@ import { findOneParams, createColumnDto } from './dto/columns.dto';
 import {
   Body,
   Controller,
+  Delete,
   Get,
   HttpCode,
   HttpStatus,
   Param,
   Post,
+  Put,
 } from '@nestjs/common';
 
 @Controller()
@@ -33,5 +35,26 @@ export class ColumnsController {
     @Body() dto: createColumnDto,
   ) {
     return this.columnsService.createOne(params, dto);
+  }
+
+  @Delete(':column_id')
+  @HttpCode(HttpStatus.OK)
+  async deleteOne(@Param() params: findOneParams) {
+    return this.columnsService.deleteOne(params);
+  }
+
+  @Delete()
+  @HttpCode(HttpStatus.OK)
+  async deleteAll(@Param() params: findOneParams) {
+    return this.columnsService.deleteAll(params);
+  }
+
+  @Put(':column_id')
+  @HttpCode(HttpStatus.OK)
+  async updateOne(
+    @Param() params: findOneParams,
+    @Body() dto: createColumnDto,
+  ) {
+    return this.columnsService.updateOne(params, dto);
   }
 }

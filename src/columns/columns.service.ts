@@ -48,10 +48,50 @@ export class ColumnsService {
       );
       return column;
     } catch (ex) {
-      console.log(ex);
-
       throw new BadRequestException({
         message: `Ошибка в создании колонки с name=${dto.name}`,
+      });
+    }
+  }
+
+  async deleteOne(params: findOneParams) {
+    const status = await this.columnsRepository.destroy({
+      where: {
+        id: params.column_id,
+        user_id: params.user_id,
+      },
+    });
+    if (!status) {
+      throw new BadRequestException({
+        message: `Не удалось найти колонку с id=${params.column_id} пользователя с id=${params.user_id}`,
+      });
+    }
+  }
+
+  async deleteAll(params: findOneParams) {
+    const status = await this.columnsRepository.destroy({
+      where: {
+        user_id: params.user_id,
+      },
+    });
+    if (!status) {
+      throw new BadRequestException({
+        message: `Не удалось найти колонки пользователя с id=${params.user_id}`,
+      });
+    }
+  }
+
+  async updateOne(params: findOneParams, dto: createColumnDto) {
+    await this.findOne(params);
+    try {
+      const result = await this.columnsRepository.update(dto, {
+        where: { user_id: params.user_id, id: params.column_id },
+        returning: true,
+      });
+      return result[1];
+    } catch (ex) {
+      throw new BadRequestException({
+        message: `Не удалось обновить колонку с id=${params.column_id} пользователя с id=${params.user_id}`,
       });
     }
   }
