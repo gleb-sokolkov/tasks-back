@@ -7,11 +7,12 @@ import {
   ForeignKey,
   Table,
   BelongsTo,
+  HasMany,
 } from 'sequelize-typescript';
+import { Card } from 'src/cards/cards.model';
 
 interface columnCreationAttrs {
   name: string;
-  user_id: number;
 }
 
 @Table({ tableName: 'column' })
@@ -42,4 +43,7 @@ export class Column extends Model<Column, columnCreationAttrs> {
 
   @BelongsTo(() => User)
   user: User;
+
+  @HasMany(() => Card)
+  cards: Card[];
 }

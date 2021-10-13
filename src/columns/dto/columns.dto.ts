@@ -1,12 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Type } from 'class-transformer';
-import {
-  IsString,
-  Matches,
-  IsNotEmpty,
-  IsOptional,
-  ValidateNested,
-} from 'class-validator';
+import { IsString, Matches, IsNotEmpty, IsOptional } from 'class-validator';
 import { findOneParams as userParams } from 'src/users/dto/user.dto';
 
 export class createColumnDto {
