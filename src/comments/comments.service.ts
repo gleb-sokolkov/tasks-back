@@ -70,13 +70,14 @@ export class CommentsService {
   }
 
   async updateOne(params: findOneParams, dto: createCommentDto) {
-    await this.findOne(params);
     try {
-      const comment = await this.findOne(params);
-      for (const [key, value] of Object.entries(dto)) {
-        comment[key] = value;
-      }
-      return await comment.save();
+      const result = await this.commentsRepository.update(dto, {
+        where: {
+          user_id: params.user_id,
+          card_id: params.card_id,
+        },
+      });
+      return result[1][0];
     } catch (ex) {
       throw new BadRequestException({
         message: `Не удалось обновить комментарий с id=${params.comment_id} пользователя с id=${params.user_id}`,

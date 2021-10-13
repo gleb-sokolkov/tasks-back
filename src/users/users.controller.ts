@@ -26,8 +26,8 @@ export class UsersController {
 
   @ApiOperation({ summary: 'Получить всех пользователей' })
   @ApiResponse({ status: HttpStatus.OK, type: [User] })
-  // @Roles()
-  // @UseGuards(AuthGuard, RolesGuard)
+  @Roles('ADMIN')
+  @UseGuards(AuthGuard, RolesGuard)
   @Get()
   @HttpCode(HttpStatus.OK)
   async getAll() {

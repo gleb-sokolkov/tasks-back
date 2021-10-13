@@ -9,9 +9,13 @@ import {
   HttpStatus,
   Param,
   Post,
+  UseGuards,
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { findOneParams } from 'src/users/dto/user.dto';
+import { RolesGuard } from './roles.guard';
+import { Roles } from './roles.decorator';
+import { AuthGuard } from 'src/auth/auth.guard';
 
 @ApiTags('Роли')
 @Controller()
@@ -20,6 +24,8 @@ export class RolesController {
 
   @ApiOperation({ summary: 'Получить все роли' })
   @ApiResponse({ status: HttpStatus.OK, type: [Role] })
+  @Roles('ADMIN')
+  @UseGuards(AuthGuard, RolesGuard)
   @Get()
   @HttpCode(HttpStatus.OK)
   async getAll() {
@@ -30,6 +36,8 @@ export class RolesController {
     summary: 'Получить существующую роль',
   })
   @ApiResponse({ status: HttpStatus.OK, type: Role })
+  @Roles('ADMIN')
+  @UseGuards(AuthGuard, RolesGuard)
   @Get(':id')
   @HttpCode(HttpStatus.OK)
   async getOne(@Param() id: findOneParams) {
@@ -38,6 +46,8 @@ export class RolesController {
 
   @ApiOperation({ summary: 'Создать роль' })
   @ApiResponse({ status: HttpStatus.CREATED, type: Role })
+  @Roles('ADMIN')
+  @UseGuards(AuthGuard, RolesGuard)
   @Post()
   @HttpCode(HttpStatus.CREATED)
   async createRole(@Body() dto: createRoleDto) {
