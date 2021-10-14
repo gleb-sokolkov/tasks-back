@@ -12,6 +12,7 @@ export class createUserDto {
   @ApiProperty({
     example: 'email@email.domain',
     description: 'Почта пользователя',
+    nullable: false,
     type: String,
   })
   @IsEmail()
@@ -22,6 +23,7 @@ export class createUserDto {
     description: 'Пароль пользователя',
     minimum: 7,
     maximum: 20,
+    nullable: false,
     type: String,
   })
   @IsString()
@@ -44,6 +46,7 @@ export class findOneParams {
   @ApiProperty({
     example: '1',
     description: 'Уникальный идентификатор',
+    nullable: false,
     type: String,
   })
   @IsOptional()

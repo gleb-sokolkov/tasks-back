@@ -15,11 +15,22 @@ import { findOneParams, createCardDto } from './dto/cards.dto';
 import { AuthGuard } from 'src/auth/auth.guard';
 import { Roles } from 'src/roles/roles.decorator';
 import { AuthParamAndRolesGuard } from 'src/auth/auth-param.guard';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
+import { Card } from './cards.model';
 
+@ApiTags('Карточки')
+@ApiBearerAuth()
 @Controller()
 export class CardsController {
   constructor(private cardsService: CardsService) {}
 
+  @ApiOperation({ summary: 'Найти одну карточку' })
+  @ApiResponse({ status: HttpStatus.OK, type: Card })
   @UseGuards(AuthGuard)
   @Get(':card_id')
   @HttpCode(HttpStatus.OK)
@@ -27,6 +38,8 @@ export class CardsController {
     return this.cardsService.findOne(params);
   }
 
+  @ApiOperation({ summary: 'Найти все карточки' })
+  @ApiResponse({ status: HttpStatus.OK, type: [Card] })
   @UseGuards(AuthGuard)
   @Get()
   @HttpCode(HttpStatus.OK)
@@ -34,6 +47,8 @@ export class CardsController {
     return this.cardsService.findAll(params);
   }
 
+  @ApiOperation({ summary: 'Создать новую карточку' })
+  @ApiResponse({ status: HttpStatus.CREATED, type: Card })
   @Roles('ADMIN')
   @UseGuards(AuthGuard, AuthParamAndRolesGuard)
   @Post()
@@ -42,6 +57,8 @@ export class CardsController {
     return this.cardsService.createOne(params, dto);
   }
 
+  @ApiOperation({ summary: 'Удалить одну карточку' })
+  @ApiResponse({ status: HttpStatus.OK })
   @Roles('ADMIN')
   @UseGuards(AuthGuard, AuthParamAndRolesGuard)
   @Delete(':card_id')
@@ -50,6 +67,8 @@ export class CardsController {
     return this.cardsService.deleteOne(params);
   }
 
+  @ApiOperation({ summary: 'Удалить все карточки' })
+  @ApiResponse({ status: HttpStatus.OK })
   @Roles('ADMIN')
   @UseGuards(AuthGuard, AuthParamAndRolesGuard)
   @Delete()
@@ -58,6 +77,8 @@ export class CardsController {
     return this.cardsService.deleteAll(params);
   }
 
+  @ApiOperation({ summary: 'Обновить одну карточку' })
+  @ApiResponse({ status: HttpStatus.OK, type: Card })
   @Roles('ADMIN')
   @UseGuards(AuthGuard, AuthParamAndRolesGuard)
   @Put(':card_id')

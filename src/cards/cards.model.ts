@@ -1,3 +1,4 @@
+import { ApiProperty } from '@nestjs/swagger';
 import {
   Model,
   Table,
@@ -17,6 +18,12 @@ interface createCardAttrs {
 
 @Table({ tableName: 'card' })
 export class Card extends Model<Card, createCardAttrs> {
+  @ApiProperty({
+    example: '74',
+    description: 'Уникальный идентификатор',
+    nullable: false,
+    type: Number,
+  })
   @column({
     type: DataType.INTEGER,
     unique: true,
@@ -25,6 +32,12 @@ export class Card extends Model<Card, createCardAttrs> {
   })
   id: number;
 
+  @ApiProperty({
+    example: 'todo something',
+    description: 'Имя карточки',
+    nullable: false,
+    type: String,
+  })
   @column({
     type: DataType.STRING,
     allowNull: false,
@@ -32,6 +45,11 @@ export class Card extends Model<Card, createCardAttrs> {
   })
   name: string;
 
+  @ApiProperty({
+    example: 'Описание',
+    description: 'Описание карточки',
+    type: String,
+  })
   @column({
     type: DataType.STRING,
   })
@@ -40,6 +58,12 @@ export class Card extends Model<Card, createCardAttrs> {
   @BelongsTo(() => Column)
   column: Column;
 
+  @ApiProperty({
+    example: '24',
+    description: 'Внешний ключ колонки',
+    nullable: false,
+    type: Number,
+  })
   @ForeignKey(() => Column)
   @column({ type: DataType.INTEGER, allowNull: false })
   column_id: number;

@@ -15,11 +15,22 @@ import {
 import { AuthGuard } from 'src/auth/auth.guard';
 import { AuthParamAndRolesGuard } from 'src/auth/auth-param.guard';
 import { Roles } from 'src/roles/roles.decorator';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
+import { Column } from './columns.model';
 
+@ApiTags('Колонки')
+@ApiBearerAuth()
 @Controller()
 export class ColumnsController {
   constructor(private columnsService: ColumnsService) {}
 
+  @ApiOperation({ summary: 'Найти одну колонку' })
+  @ApiResponse({ status: HttpStatus.OK, type: Column })
   @UseGuards(AuthGuard)
   @Get(':column_id')
   @HttpCode(HttpStatus.OK)
@@ -27,6 +38,8 @@ export class ColumnsController {
     return this.columnsService.findOne(params);
   }
 
+  @ApiOperation({ summary: 'Найти все колонки' })
+  @ApiResponse({ status: HttpStatus.OK, type: [Column] })
   @UseGuards(AuthGuard)
   @Get()
   @HttpCode(HttpStatus.OK)
@@ -34,6 +47,8 @@ export class ColumnsController {
     return this.columnsService.findAll(params);
   }
 
+  @ApiOperation({ summary: 'Создать новую колонку' })
+  @ApiResponse({ status: HttpStatus.CREATED, type: Column })
   @Roles('ADMIN')
   @UseGuards(AuthGuard, AuthParamAndRolesGuard)
   @Post()
@@ -45,6 +60,8 @@ export class ColumnsController {
     return this.columnsService.createOne(params, dto);
   }
 
+  @ApiOperation({ summary: 'Удалить одну колонку' })
+  @ApiResponse({ status: HttpStatus.OK })
   @Roles('ADMIN')
   @UseGuards(AuthGuard, AuthParamAndRolesGuard)
   @Delete(':column_id')
@@ -53,6 +70,8 @@ export class ColumnsController {
     return this.columnsService.deleteOne(params);
   }
 
+  @ApiOperation({ summary: 'Удалить все колонки' })
+  @ApiResponse({ status: HttpStatus.OK })
   @Roles('ADMIN')
   @UseGuards(AuthGuard, AuthParamAndRolesGuard)
   @Delete()
@@ -61,6 +80,8 @@ export class ColumnsController {
     return this.columnsService.deleteAll(params);
   }
 
+  @ApiOperation({ summary: 'Обновить одну колонку' })
+  @ApiResponse({ status: HttpStatus.OK, type: Column })
   @Roles('ADMIN')
   @UseGuards(AuthGuard, AuthParamAndRolesGuard)
   @Put(':column_id')

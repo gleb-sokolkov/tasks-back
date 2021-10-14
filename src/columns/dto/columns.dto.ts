@@ -4,10 +4,9 @@ import { findOneParams as userParams } from 'src/users/dto/user.dto';
 
 export class createColumnDto {
   @ApiProperty({
-    example: 'Axs@xsa1sj',
-    description: 'Пароль пользователя',
-    minimum: 7,
-    maximum: 20,
+    example: 'Колонка1',
+    description: 'Имя колонки',
+    nullable: false,
     type: String,
   })
   @IsString()
@@ -19,6 +18,7 @@ export class findOneParams extends userParams {
   @ApiProperty({
     example: '1123',
     description: 'Уникальный идентификатор',
+    nullable: false,
     type: String,
   })
   @IsOptional()

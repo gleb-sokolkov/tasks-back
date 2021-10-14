@@ -1,3 +1,4 @@
+import { ApiProperty } from '@nestjs/swagger';
 import {
   Table,
   Column,
@@ -15,6 +16,12 @@ interface createCommentAttrs {
 
 @Table({ tableName: 'comment' })
 export class Comment extends ModelWithID<Comment, createCommentAttrs> {
+  @ApiProperty({
+    example: 'Привет',
+    description: 'Текст сообщения',
+    nullable: false,
+    type: String,
+  })
   @Column({
     type: DataType.STRING,
     allowNull: false,
@@ -24,6 +31,12 @@ export class Comment extends ModelWithID<Comment, createCommentAttrs> {
   @BelongsTo(() => Card)
   card: Card;
 
+  @ApiProperty({
+    example: '42',
+    description: 'Внешний ключ карточки',
+    nullable: false,
+    type: Number,
+  })
   @ForeignKey(() => Card)
   @Column({ type: DataType.INTEGER, allowNull: false })
   card_id: number;
@@ -31,6 +44,12 @@ export class Comment extends ModelWithID<Comment, createCommentAttrs> {
   @BelongsTo(() => User)
   user: User;
 
+  @ApiProperty({
+    example: '22',
+    description: 'Внешний ключ пользователя',
+    nullable: false,
+    type: Number,
+  })
   @ForeignKey(() => User)
   @Column({ type: DataType.INTEGER, allowNull: false })
   user_id: number;

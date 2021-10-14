@@ -5,6 +5,7 @@ export class createRoleDto {
   @ApiProperty({
     example: 'ADMIN',
     description: 'Роль пользователя',
+    nullable: false,
     type: String,
   })
   @IsNotEmpty()

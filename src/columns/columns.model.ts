@@ -30,6 +30,11 @@ export class Column extends Model<Column, columnCreationAttrs> {
   })
   id: number;
 
+  @ApiProperty({
+    example: 'Колонка1',
+    description: 'Имя колонки',
+    type: String,
+  })
   @column({
     type: DataType.STRING,
     allowNull: false,
@@ -37,6 +42,11 @@ export class Column extends Model<Column, columnCreationAttrs> {
   })
   name: string;
 
+  @ApiProperty({
+    example: '19',
+    description: 'Внешний ключ пользователя',
+    type: Number,
+  })
   @ForeignKey(() => User)
   @column({ type: DataType.INTEGER, allowNull: false })
   user_id: number;

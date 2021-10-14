@@ -17,6 +17,7 @@ export class AuthController {
   constructor(private authService: AuthService) {}
 
   @ApiOperation({ summary: 'Вход пользователя' })
+  @ApiResponse({ status: HttpStatus.OK, description: 'Успешный вход' })
   @Post('/login')
   @HttpCode(HttpStatus.OK)
   async login(@Body() dto: createUserDto, @Req() req: Request) {
@@ -25,7 +26,10 @@ export class AuthController {
   }
 
   @ApiOperation({ summary: 'Регистрация пользователя' })
-  @ApiResponse({ status: HttpStatus.CREATED })
+  @ApiResponse({
+    status: HttpStatus.CREATED,
+    description: 'Успешная регистрация',
+  })
   @Post('/registration')
   @HttpCode(HttpStatus.CREATED)
   async registration(@Body() dto: createUserDto, @Req() req: Request) {
