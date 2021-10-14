@@ -33,32 +33,3 @@ export class findOneParams extends cardParams {
   @Matches(/^\d+$/)
   comment_id: string;
 }
-
-export class findOneParamsWithUser extends findOneParams {
-  @ApiProperty({
-    example: '51',
-    description: 'Уникальный идентификатор аутентифицированного пользователя',
-    nullable: false,
-    type: String,
-  })
-  @IsString()
-  @Matches(/^\d+$/)
-  user: string;
-}
-
-export class paramsAndDto {
-  @ApiProperty({
-    description: 'create comment DTO',
-    type: () => createCommentDto,
-  })
-  @ValidateNested()
-  @Type(() => createCommentDto)
-  dto: createCommentDto;
-
-  @ApiProperty({
-    type: () => findOneParamsWithUser,
-  })
-  @ValidateNested()
-  @Type(() => findOneParamsWithUser)
-  params: findOneParamsWithUser;
-}

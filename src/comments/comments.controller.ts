@@ -1,5 +1,6 @@
 import { CommentsService } from './comments.service';
 import {
+  Body,
   Controller,
   Delete,
   Get,
@@ -10,8 +11,7 @@ import {
   Put,
   UseGuards,
 } from '@nestjs/common';
-import { findOneParams, paramsAndDto } from './dto/comments.dto';
-import { AnotherUser } from './comments.decorator';
+import { createCommentDto, findOneParams } from './dto/comments.dto';
 import { AuthGuard } from 'src/auth/auth.guard';
 import { Roles } from 'src/roles/roles.decorator';
 import { AuthParamAndRolesGuard } from 'src/auth/auth-param.guard';
@@ -53,8 +53,11 @@ export class CommentsController {
   @UseGuards(AuthGuard, AuthParamAndRolesGuard)
   @Post()
   @HttpCode(HttpStatus.CREATED)
-  async createOneByAnother(@AnotherUser() data: paramsAndDto) {
-    return this.commentsService.createOne(data.params, data.dto);
+  async createOneByAnother(
+    @Param() params: findOneParams,
+    @Body() dto: createCommentDto,
+  ) {
+    return this.commentsService.createOne(params, dto);
   }
 
   @ApiOperation({ summary: 'Удалить один комментарий' })
@@ -83,7 +86,10 @@ export class CommentsController {
   @UseGuards(AuthGuard, AuthParamAndRolesGuard)
   @Put(':comment_id')
   @HttpCode(HttpStatus.OK)
-  async updateOne(@AnotherUser() data: paramsAndDto) {
-    return this.commentsService.updateOne(data.params, data.dto);
+  async updateOne(
+    @Param() params: findOneParams,
+    @Body() dto: createCommentDto,
+  ) {
+    return this.commentsService.updateOne(params, dto);
   }
 }

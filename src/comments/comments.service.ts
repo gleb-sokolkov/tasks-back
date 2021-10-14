@@ -1,11 +1,7 @@
 import { CardsService } from './../cards/cards.service';
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
-import {
-  createCommentDto,
-  findOneParams,
-  findOneParamsWithUser,
-} from './dto/comments.dto';
+import { createCommentDto, findOneParams } from './dto/comments.dto';
 import { Card } from 'src/cards/cards.model';
 import { User } from 'src/users/users.model';
 import { Comment } from 'src/comments/comments.model';
@@ -41,12 +37,12 @@ export class CommentsService {
     });
   }
 
-  async createOne(params: findOneParamsWithUser, dto: createCommentDto) {
+  async createOne(params: findOneParams, dto: createCommentDto) {
     try {
       const card = await this.cardsService.findOne(params);
       return await card.$create(
         'comment',
-        Object.assign(dto, { user_id: params.user }),
+        Object.assign(dto, { user_id: params.user_id }),
         {
           include: [Card, User],
         },
@@ -76,6 +72,7 @@ export class CommentsService {
           user_id: params.user_id,
           card_id: params.card_id,
         },
+        returning: true,
       });
       return result[1][0];
     } catch (ex) {
