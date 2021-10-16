@@ -9,6 +9,7 @@ import {
   Param,
   Post,
   Put,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import { createCommentDto, findOneParams } from './dto/comments.dto';
@@ -17,15 +18,22 @@ import { Roles } from 'src/roles/roles.decorator';
 import { AuthParamAndRolesGuard } from 'src/auth/auth-param.guard';
 import {
   ApiBearerAuth,
+  ApiHeader,
   ApiOperation,
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
 import { Comment } from './comments.model';
 import { RestAPIRoutes } from 'src/restAPI/restAPI.interface';
+import { Payload } from 'src/auth/dto/auth.dto';
+import { User } from 'src/auth/auth.decorator';
 
 @ApiTags('Комментарии')
 @ApiBearerAuth()
+@ApiHeader({
+  name: 'Authorization',
+  description: 'Токен доступа',
+})
 @Controller()
 export class CommentsController
   implements RestAPIRoutes<Comment, findOneParams, createCommentDto>
@@ -52,8 +60,7 @@ export class CommentsController
 
   @ApiOperation({ summary: 'Создать новый комментарий' })
   @ApiResponse({ status: HttpStatus.CREATED, type: Comment })
-  @Roles('ADMIN')
-  @UseGuards(AuthGuard, AuthParamAndRolesGuard)
+  @UseGuards(AuthGuard)
   @Post()
   @HttpCode(HttpStatus.CREATED)
   async createOne(
@@ -65,8 +72,7 @@ export class CommentsController
 
   @ApiOperation({ summary: 'Удалить один комментарий' })
   @ApiResponse({ status: HttpStatus.OK })
-  @Roles('ADMIN')
-  @UseGuards(AuthGuard, AuthParamAndRolesGuard)
+  @UseGuards(AuthGuard)
   @Delete(':comment_id')
   @HttpCode(HttpStatus.OK)
   async deleteOne(@Param() params: findOneParams) {
@@ -85,8 +91,7 @@ export class CommentsController
 
   @ApiOperation({ summary: 'Обновить один комментарий' })
   @ApiResponse({ status: HttpStatus.OK, type: Comment })
-  @Roles('ADMIN')
-  @UseGuards(AuthGuard, AuthParamAndRolesGuard)
+  @UseGuards(AuthGuard)
   @Put(':comment_id')
   @HttpCode(HttpStatus.OK)
   async updateOne(
@@ -94,5 +99,17 @@ export class CommentsController
     @Body() dto: createCommentDto,
   ) {
     return this.commentsService.updateOne(params, dto);
+  }
+
+  @UseGuards(AuthGuard)
+  @Post()
+  @HttpCode(HttpStatus.OK)
+  async createOneOpen(
+    @Param() params: findOneParams,
+    @Body() dto: createCommentDto,
+    @Query('state') state: string,
+  ) {
+    console.log(state === 'open');
+    //return this.commentsService.createOne(params, dto);
   }
 }

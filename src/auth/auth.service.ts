@@ -4,6 +4,7 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { User } from 'src/users/users.model';
 import * as bcrypt from 'bcrypt';
+import { Payload } from './dto/auth.dto';
 
 @Injectable()
 export class AuthService {
@@ -34,11 +35,14 @@ export class AuthService {
   }
 
   private createAccessToken(user: User) {
-    const payload = { id: user.id, roles: user.roles };
-    const token = this.jwtService.sign(payload, {
-      secret: process.env.JWT_SECRET,
-      expiresIn: process.env.AT_EXPIRE,
-    });
+    const payload = new Payload(user.id, user.roles);
+    const token = this.jwtService.sign(
+      { payload },
+      {
+        secret: process.env.JWT_SECRET,
+        expiresIn: process.env.AT_EXPIRE,
+      },
+    );
     return token;
   }
 

@@ -6,6 +6,7 @@ import { Card } from 'src/cards/cards.model';
 import { User } from 'src/users/users.model';
 import { Comment } from 'src/comments/comments.model';
 import { RestAPIService } from 'src/restAPI/restAPI.interface';
+import { Payload } from 'src/auth/dto/auth.dto';
 
 @Injectable()
 export class CommentsService
@@ -17,39 +18,48 @@ export class CommentsService
   ) {}
 
   async findOne(params: findOneParams) {
-    const card = await this.cardsService.findOne(params);
-
-    const comment = await card.$get('comments', {
-      where: { id: params.comment_id },
+    const comment = await this.commentsRepository.findOne({
+      where: {
+        id: params.comment_id,
+        card_id: params.card_id,
+      },
       include: [Card, User],
     });
 
-    if (!comment[0]) {
+    if (!comment) {
       throw new BadRequestException({
         message: `Не удалось найти комментарий с id=${params.comment_id} пользователя с id=${params.user_id}`,
       });
     } else {
-      return comment[0];
+      return comment;
     }
   }
 
   async findAll(params: findOneParams) {
-    const card = await this.cardsService.findOne(params);
-    return await card.$get('comments', {
+    const comments = await this.commentsRepository.findAll({
+      where: { card_id: params.card_id },
       include: [Card, User],
     });
+
+    if (comments.length === 0) {
+      throw new BadRequestException({
+        message: `Комментариев в карточке с id=${params.card_id} не найдено`,
+      });
+    } else {
+      return comments;
+    }
   }
 
   async createOne(params: findOneParams, dto: createCommentDto) {
     try {
-      const card = await this.cardsService.findOne(params);
-      return (await card.$create(
-        'comment',
-        Object.assign(dto, { user_id: params.user_id }),
-        {
-          include: [Card, User],
-        },
-      )) as Comment;
+      const comment = await this.commentsRepository.create(
+        Object.assign(dto, {
+          card_id: parseInt(params.card_id),
+          user_id: parseInt(params.user_id),
+        }),
+        { include: [Card, User] },
+      );
+      return comment;
     } catch (ex) {
       console.log(ex);
       throw new BadRequestException({
@@ -59,19 +69,38 @@ export class CommentsService
   }
 
   async deleteOne(params: findOneParams) {
-    const comment = await this.findOne(params);
-    await comment.destroy();
+    const status = await this.commentsRepository.destroy({
+      where: {
+        id: params.comment_id,
+        user_id: params.user_id,
+        card_id: params.card_id,
+      },
+    });
+
+    if (!status) {
+      throw new BadRequestException({
+        message: `Комментарий с id=${params.comment_id} пользователя id=${params.user_id} не найден`,
+      });
+    }
   }
 
   async deleteAll(params: findOneParams) {
-    const comments = await this.findAll(params);
-    comments.forEach(async (comment) => await comment.destroy());
+    const status = this.commentsRepository.destroy({
+      where: { card_id: params.card_id },
+    });
+
+    if (!status) {
+      throw new BadRequestException({
+        message: `Комментариев в карточке с id=${params.card_id} не найдено`,
+      });
+    }
   }
 
   async updateOne(params: findOneParams, dto: createCommentDto) {
     try {
       const result = await this.commentsRepository.update(dto, {
         where: {
+          id: params.comment_id,
           user_id: params.user_id,
           card_id: params.card_id,
         },

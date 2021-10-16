@@ -12,6 +12,8 @@ import { User } from 'src/users/users.model';
 
 interface createCommentAttrs {
   message: string;
+  card_id: number;
+  user_id: number;
 }
 
 @Table({ tableName: 'comment' })
