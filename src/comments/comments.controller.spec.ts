@@ -3,11 +3,7 @@ import { CommentsController } from './comments.controller';
 import { CommentsService } from './comments.service';
 import { JwtServiceMock } from 'src/auth/__mocks__/auth.jwt-service';
 import { commentStub } from './stubs/comments.stub';
-import {
-  findOneParams,
-  findOneParamsWithUser,
-  paramsAndDto,
-} from './dto/comments.dto';
+import { createCommentDto, findOneParams } from './dto/comments.dto';
 import { Comment } from './comments.model';
 
 jest.mock('./comments.service');
@@ -90,19 +86,21 @@ describe('CommentsController', () => {
   describe('createOneByAnother()', () => {
     let comment: Comment;
     let stub: Comment;
-    let body: paramsAndDto;
+    let params: findOneParams;
+    let dto: createCommentDto;
 
     beforeEach(async () => {
       stub = commentStub();
-      body = {
-        params: {
-          comment_id: String(stub.id),
-          user_id: String(stub.user_id),
-          card_id: String(stub.card_id),
-        } as findOneParamsWithUser,
-        dto: { message: stub.message },
-      };
-      comment = await controller.createOneByAnother(body);
+      params = {
+        comment_id: String(stub.id),
+        user_id: String(stub.user_id),
+        card_id: String(stub.card_id),
+      } as findOneParams;
+      dto = {
+        message: stub.message,
+      } as createCommentDto;
+
+      comment = await controller.createOneByAnother(params, dto);
     });
 
     it('should be defined', () => {
@@ -110,13 +108,13 @@ describe('CommentsController', () => {
     });
 
     it('should be called with params', () => {
-      expect(service.createOne).toBeCalledWith(body.params, body.dto);
+      expect(service.createOne).toBeCalledWith(params, dto);
     });
 
     it('should return comment', () => {
-      return expect(controller.createOneByAnother(body)).resolves.toEqual(
-        comment,
-      );
+      return expect(
+        controller.createOneByAnother(params, dto),
+      ).resolves.toEqual(comment);
     });
   });
 
@@ -175,20 +173,21 @@ describe('CommentsController', () => {
 
   describe('updateOne()', () => {
     let stub: Comment;
-    let body: paramsAndDto;
     let comment: Comment;
+    let params: findOneParams;
+    let dto: createCommentDto;
 
     beforeEach(async () => {
       stub = commentStub();
-      body = {
-        params: {
-          comment_id: String(stub.id),
-          user_id: String(stub.user_id),
-          card_id: String(stub.card_id),
-        } as findOneParamsWithUser,
-        dto: { message: stub.message },
-      };
-      comment = await controller.updateOne(body);
+      params = {
+        comment_id: String(stub.id),
+        user_id: String(stub.user_id),
+        card_id: String(stub.card_id),
+      } as findOneParams;
+      dto = {
+        message: stub.message,
+      } as createCommentDto;
+      comment = await controller.updateOne(params, dto);
     });
 
     it('should be defined', () => {
@@ -196,11 +195,13 @@ describe('CommentsController', () => {
     });
 
     it('should be called with params', () => {
-      expect(service.updateOne).toBeCalledWith(body.params, body.dto);
+      expect(service.updateOne).toBeCalledWith(params, dto);
     });
 
     it('should return comment', () => {
-      return expect(controller.updateOne(body)).resolves.toEqual(comment);
+      return expect(controller.updateOne(params, dto)).resolves.toEqual(
+        comment,
+      );
     });
   });
 });
