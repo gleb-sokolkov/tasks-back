@@ -40,13 +40,13 @@ export class CommentsService {
   async createOne(params: findOneParams, dto: createCommentDto) {
     try {
       const card = await this.cardsService.findOne(params);
-      return await card.$create(
+      return (await card.$create(
         'comment',
         Object.assign(dto, { user_id: params.user_id }),
         {
           include: [Card, User],
         },
-      );
+      )) as Comment;
     } catch (ex) {
       console.log(ex);
       throw new BadRequestException({
@@ -57,12 +57,12 @@ export class CommentsService {
 
   async deleteOne(params: findOneParams) {
     const comment = await this.findOne(params);
-    comment.destroy();
+    await comment.destroy();
   }
 
   async deleteAll(params: findOneParams) {
     const comments = await this.findAll(params);
-    comments.forEach((comment) => comment.destroy());
+    comments.forEach(async (comment) => await comment.destroy());
   }
 
   async updateOne(params: findOneParams, dto: createCommentDto) {
