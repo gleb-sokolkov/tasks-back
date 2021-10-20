@@ -1,6 +1,6 @@
 import { Comment } from '../comments.model';
 
-const commentStub = (): Comment => {
+export const commentStub = (): Comment => {
   return {
     message: 'Test',
     card_id: 10,
@@ -8,5 +8,3 @@ const commentStub = (): Comment => {
     id: 5,
   } as Comment;
 };
-
-export { commentStub };

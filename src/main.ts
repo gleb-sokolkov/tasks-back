@@ -27,7 +27,7 @@ async function initRoles(app: INestApplication) {
 
   try {
     const u = app.get(UsersService);
-    const admin = await u.createUser({
+    const admin = await u.createOne(null, {
       email: 'admin@admin.admin',
       password: '12345abc',
     });

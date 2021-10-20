@@ -28,7 +28,7 @@ export class AuthService {
   }
 
   async registration(dto: createUserDto) {
-    const user = await this.usersService.createUser(dto);
+    const user = await this.usersService.createOne(null, dto);
     const token = await this.createAccessToken(user);
     return this.tokenToCookie(token);
   }

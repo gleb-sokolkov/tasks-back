@@ -23,11 +23,14 @@ import {
 } from '@nestjs/swagger';
 import { RolesGuard } from 'src/roles/roles.guard';
 import { Roles } from 'src/roles/roles.decorator';
+import { RestAPIRoutes } from 'src/restAPI/restAPI.interface';
 
 @ApiTags('Пользователи')
 @ApiBearerAuth()
 @Controller()
-export class UsersController {
+export class UsersController
+  implements RestAPIRoutes<User, findOneParams, createUserDto>
+{
   constructor(private usersService: UsersService) {}
 
   @ApiOperation({ summary: 'Получить всех пользователей' })
@@ -36,8 +39,8 @@ export class UsersController {
   @UseGuards(AuthGuard, RolesGuard)
   @Get()
   @HttpCode(HttpStatus.OK)
-  async getAll() {
-    return this.usersService.findAll();
+  async getAll(@Param() params: findOneParams) {
+    return this.usersService.findAll(params);
   }
 
   @ApiOperation({ summary: 'Получить существующего пользователя' })
@@ -45,8 +48,8 @@ export class UsersController {
   @UseGuards(AuthGuard)
   @Get(':user_id')
   @HttpCode(HttpStatus.OK)
-  async getOne(@Param() id: findOneParams) {
-    return this.usersService.findOne(id);
+  async getOne(@Param() params: findOneParams) {
+    return this.usersService.findOne(params);
   }
 
   @ApiOperation({ summary: 'Создать нового пользователя' })
@@ -55,8 +58,8 @@ export class UsersController {
   @UseGuards(AuthGuard, RolesGuard)
   @Post()
   @HttpCode(HttpStatus.CREATED)
-  async createUser(@Body() dto: createUserDto) {
-    return this.usersService.createUser(dto);
+  async createOne(@Param() params: findOneParams, @Body() dto: createUserDto) {
+    return this.usersService.createOne(params, dto);
   }
 
   @ApiOperation({ summary: 'Обновить существующего пользователя' })
@@ -78,8 +81,8 @@ export class UsersController {
   @UseGuards(AuthGuard, RolesGuard)
   @Delete()
   @HttpCode(HttpStatus.OK)
-  async deleteAll() {
-    this.usersService.deleteAll();
+  async deleteAll(@Param() params: findOneParams) {
+    this.usersService.deleteAll(params);
   }
 
   @ApiOperation({ summary: 'Удалить существующего пользователя' })
@@ -88,8 +91,8 @@ export class UsersController {
   @UseGuards(AuthGuard, RolesGuard)
   @Delete(':user_id')
   @HttpCode(HttpStatus.OK)
-  async deleteOne(@Param() findOneParams: findOneParams) {
-    await this.usersService.deleteOne(findOneParams);
+  async deleteOne(@Param() params: findOneParams) {
+    await this.usersService.deleteOne(params);
   }
 
   @ApiOperation({ summary: 'Изменить права пользователя' })

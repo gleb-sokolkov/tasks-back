@@ -4,9 +4,12 @@ import { InjectModel } from '@nestjs/sequelize';
 import { findOneParams, createCardDto } from './dto/cards.dto';
 import { Column } from 'src/columns/columns.model';
 import { Card } from './cards.model';
+import { RestAPIService } from 'src/restAPI/restAPI.interface';
 
 @Injectable()
-export class CardsService {
+export class CardsService
+  implements RestAPIService<Card, findOneParams, createCardDto>
+{
   constructor(
     @InjectModel(Card) private cardsRepository: typeof Card,
     private columnsService: ColumnsService,
@@ -39,9 +42,9 @@ export class CardsService {
   async createOne(params: findOneParams, dto: createCardDto) {
     try {
       const column = await this.columnsService.findOne(params);
-      return await column.$create('card', dto, {
+      return (await column.$create('card', dto, {
         include: [Column],
-      });
+      })) as Card;
     } catch (ex) {
       console.log(ex);
       throw new BadRequestException({

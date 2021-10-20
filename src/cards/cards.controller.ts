@@ -22,11 +22,14 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { Card } from './cards.model';
+import { RestAPIRoutes } from 'src/restAPI/restAPI.interface';
 
 @ApiTags('Карточки')
 @ApiBearerAuth()
 @Controller()
-export class CardsController {
+export class CardsController
+  implements RestAPIRoutes<Card, findOneParams, createCardDto>
+{
   constructor(private cardsService: CardsService) {}
 
   @ApiOperation({ summary: 'Найти одну карточку' })
