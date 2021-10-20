@@ -6,15 +6,18 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { UniqueConstraintError } from 'sequelize';
 import * as bcrypt from 'bcrypt';
+import { RestAPIService } from 'src/restAPI/restAPI.interface';
 
 @Injectable()
-export class UsersService {
+export class UsersService
+  implements RestAPIService<User, findOneParams, createUserDto>
+{
   constructor(
     @InjectModel(User) private userRepository: typeof User,
     private rolesService: RolesService,
   ) {}
 
-  async createUser(dto: createUserDto) {
+  async createOne(params: findOneParams, dto: createUserDto) {
     dto.password = bcrypt.hashSync(
       dto.password,
       parseInt(process.env.SALT_ROUNDS),
@@ -34,7 +37,7 @@ export class UsersService {
     }
   }
 
-  async findAll() {
+  async findAll(params: findOneParams) {
     return this.userRepository.findAll({ include: [Role] });
   }
 
@@ -78,7 +81,7 @@ export class UsersService {
         { email: dto.email, password: dto.password },
         { where: { id: params.user_id }, returning: true },
       );
-      return result[1];
+      return result[1][0];
     } catch (ex) {
       if (ex instanceof UniqueConstraintError) {
         throw new BadRequestException({
@@ -103,7 +106,7 @@ export class UsersService {
     return user;
   }
 
-  async deleteAll() {
+  async deleteAll(params: findOneParams) {
     await this.userRepository.destroy({ where: {} });
   }
 

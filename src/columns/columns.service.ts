@@ -1,12 +1,15 @@
 import { Injectable, BadRequestException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
+import { RestAPIService } from 'src/restAPI/restAPI.interface';
 import { User } from 'src/users/users.model';
 import { UsersService } from 'src/users/users.service';
 import { Column } from './columns.model';
 import { findOneParams, createColumnDto } from './dto/columns.dto';
 
 @Injectable()
-export class ColumnsService {
+export class ColumnsService
+  implements RestAPIService<Column, findOneParams, createColumnDto>
+{
   constructor(
     @InjectModel(Column) private columnsRepository: typeof Column,
     private usersService: UsersService,
@@ -39,9 +42,9 @@ export class ColumnsService {
   async createOne(params: findOneParams, dto: createColumnDto) {
     try {
       const user = await this.usersService.findOne(params);
-      return await user.$create('column', dto, {
+      return (await user.$create('column', dto, {
         include: [User],
-      });
+      })) as Column;
     } catch (ex) {
       throw new BadRequestException({
         message: `Пользователя с id=${params.user_id} не существует`,

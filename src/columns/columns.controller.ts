@@ -22,11 +22,14 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { Column } from './columns.model';
+import { RestAPIRoutes } from 'src/restAPI/restAPI.interface';
 
 @ApiTags('Колонки')
 @ApiBearerAuth()
 @Controller()
-export class ColumnsController {
+export class ColumnsController
+  implements RestAPIRoutes<Column, findOneParams, createColumnDto>
+{
   constructor(private columnsService: ColumnsService) {}
 
   @ApiOperation({ summary: 'Найти одну колонку' })

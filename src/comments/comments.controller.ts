@@ -22,11 +22,14 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { Comment } from './comments.model';
+import { RestAPIRoutes } from 'src/restAPI/restAPI.interface';
 
 @ApiTags('Комментарии')
 @ApiBearerAuth()
 @Controller()
-export class CommentsController {
+export class CommentsController
+  implements RestAPIRoutes<Comment, findOneParams, createCommentDto>
+{
   constructor(private commentsService: CommentsService) {}
 
   @ApiOperation({ summary: 'Найти один комментарий' })
@@ -53,7 +56,7 @@ export class CommentsController {
   @UseGuards(AuthGuard, AuthParamAndRolesGuard)
   @Post()
   @HttpCode(HttpStatus.CREATED)
-  async createOneByAnother(
+  async createOne(
     @Param() params: findOneParams,
     @Body() dto: createCommentDto,
   ) {

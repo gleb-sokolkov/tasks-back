@@ -5,9 +5,12 @@ import { createCommentDto, findOneParams } from './dto/comments.dto';
 import { Card } from 'src/cards/cards.model';
 import { User } from 'src/users/users.model';
 import { Comment } from 'src/comments/comments.model';
+import { RestAPIService } from 'src/restAPI/restAPI.interface';
 
 @Injectable()
-export class CommentsService {
+export class CommentsService
+  implements RestAPIService<Comment, findOneParams, createCommentDto>
+{
   constructor(
     @InjectModel(Comment) private commentsRepository: typeof Comment,
     private cardsService: CardsService,
