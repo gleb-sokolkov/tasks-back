@@ -9,7 +9,7 @@ async function initRoles(app: INestApplication) {
   const r = app.get(RolesService);
 
   try {
-    await r.createRole({
+    await r.createOne(null, {
       value: 'USER',
       description: 'Пользователь',
     });
@@ -17,7 +17,7 @@ async function initRoles(app: INestApplication) {
     console.log(ex.message);
   }
   try {
-    await r.createRole({
+    await r.createOne(null, {
       value: 'ADMIN',
       description: 'Администратор',
     });
