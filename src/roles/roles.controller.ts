@@ -1,5 +1,5 @@
 import { Role } from './roles.model';
-import { createRoleDto } from './dto/role.dto';
+import { createRoleDto, findOneParams } from './dto/role.dto';
 import { RolesService } from './roles.service';
 import {
   Body,
@@ -17,15 +17,17 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import { findOneParams } from 'src/users/dto/user.dto';
 import { RolesGuard } from './roles.guard';
 import { Roles } from './roles.decorator';
 import { AuthGuard } from 'src/auth/auth.guard';
+import { RestAPIRoutes } from 'src/restAPI/restAPI.interface';
 
 @ApiTags('Роли')
 @ApiBearerAuth()
 @Controller()
-export class RolesController {
+export class RolesController
+  implements RestAPIRoutes<Role, findOneParams, createRoleDto>
+{
   constructor(private rolesService: RolesService) {}
 
   @ApiOperation({ summary: 'Получить все роли' })
@@ -34,8 +36,8 @@ export class RolesController {
   @UseGuards(AuthGuard, RolesGuard)
   @Get()
   @HttpCode(HttpStatus.OK)
-  async getAll() {
-    return this.rolesService.findAll();
+  async getAll(@Param() params: findOneParams) {
+    return this.rolesService.findAll(params);
   }
 
   @ApiOperation({
@@ -44,10 +46,10 @@ export class RolesController {
   @ApiResponse({ status: HttpStatus.OK, type: Role })
   @Roles('ADMIN')
   @UseGuards(AuthGuard, RolesGuard)
-  @Get(':id')
+  @Get(':role_id')
   @HttpCode(HttpStatus.OK)
-  async getOne(@Param() id: findOneParams) {
-    return this.rolesService.findOne(id);
+  async getOne(@Param() params: findOneParams) {
+    return this.rolesService.findOne(params);
   }
 
   @ApiOperation({ summary: 'Создать роль' })
@@ -56,7 +58,7 @@ export class RolesController {
   @UseGuards(AuthGuard, RolesGuard)
   @Post()
   @HttpCode(HttpStatus.CREATED)
-  async createRole(@Body() dto: createRoleDto) {
-    return this.rolesService.createRole(dto);
+  async createOne(@Param() params: findOneParams, @Body() dto: createRoleDto) {
+    return this.rolesService.createOne(params, dto);
   }
 }

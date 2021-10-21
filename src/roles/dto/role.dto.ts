@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsString } from 'class-validator';
+import { IsNotEmpty, IsOptional, IsString, Matches } from 'class-validator';
 
 export class createRoleDto {
   @ApiProperty({
@@ -19,4 +19,17 @@ export class createRoleDto {
   })
   @IsString()
   description: string;
+}
+
+export class findOneParams {
+  @ApiProperty({
+    example: '163',
+    description: 'Уникальный идентификатор',
+    nullable: false,
+    type: String,
+  })
+  @IsOptional()
+  @IsString()
+  @Matches(/^\d+$/)
+  role_id: string;
 }

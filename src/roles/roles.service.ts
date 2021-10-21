@@ -1,12 +1,14 @@
 import { Role } from './roles.model';
 import { Injectable, BadRequestException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
-import { createRoleDto } from './dto/role.dto';
+import { createRoleDto, findOneParams } from './dto/role.dto';
 import { UniqueConstraintError } from 'sequelize';
-import { findOneParams } from 'src/users/dto/user.dto';
+import { RestAPIService } from 'src/restAPI/restAPI.interface';
 
 @Injectable()
-export class RolesService {
+export class RolesService
+  implements RestAPIService<Role, findOneParams, createRoleDto>
+{
   constructor(@InjectModel(Role) private rolesRepository: typeof Role) {}
 
   async getRoleByValue(value: string) {
@@ -19,25 +21,25 @@ export class RolesService {
     return role;
   }
 
-  async findAll() {
+  async findAll(params: findOneParams) {
     return this.rolesRepository.findAll();
   }
 
   async findOne(params: findOneParams) {
     const role = await this.rolesRepository.findOne({
-      where: { id: params.user_id },
+      where: { id: params.role_id },
     });
     if (!role) {
       throw new BadRequestException(
         null,
-        `Не удалось найти роль с id=${params.user_id}`,
+        `Не удалось найти роль с id=${params.role_id}`,
       );
     } else {
       return role;
     }
   }
 
-  async createRole(dto: createRoleDto) {
+  async createOne(params: findOneParams, dto: createRoleDto) {
     try {
       const role = await this.rolesRepository.create(dto);
       return role;
@@ -53,11 +55,11 @@ export class RolesService {
 
   async deleteOne(params: findOneParams) {
     const status = await this.rolesRepository.destroy({
-      where: { id: params.user_id },
+      where: { id: params.role_id },
     });
     if (!status) {
       throw new BadRequestException({
-        message: `Не удалось найти роль с id=${params.user_id}`,
+        message: `Не удалось найти роль с id=${params.role_id}`,
       });
     }
   }

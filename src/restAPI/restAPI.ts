@@ -26,7 +26,16 @@ export class RestAPI<T, P, D> {
     this.serviceType = serviceType;
   }
 
-  test() {
+  test(
+    methods = [
+      this.getOne,
+      this.getAll,
+      this.createOne,
+      this.deleteOne,
+      this.deleteAll,
+      this.updateOne,
+    ],
+  ) {
     describe(this.name, () => {
       beforeEach(async () => {
         const module: TestingModule = await Test.createTestingModule({
@@ -45,146 +54,156 @@ export class RestAPI<T, P, D> {
         expect(this.controller).toBeDefined();
       });
 
-      describe('getOne()', () => {
-        let item: T;
-        let params: P;
+      methods.forEach((m) => m.call(this));
+    });
+  }
 
-        beforeEach(async () => {
-          params = this.params();
-          item = await this.controller.getOne(params);
-        });
+  getOne() {
+    describe('getOne()', () => {
+      let item: T;
+      let params: P;
 
-        it('should be defined', () => {
-          expect(this.controller.getOne).toBeDefined();
-        });
-
-        it('should be called with params', () => {
-          expect(this.service.findOne).toBeCalledWith(params);
-        });
-
-        it('should return item', () => {
-          return expect(this.controller.getOne(params)).resolves.toEqual(item);
-        });
+      beforeEach(async () => {
+        params = this.params();
+        item = await this.controller.getOne(params);
       });
 
-      describe('getAll()', () => {
-        let items: T[];
-        let params: P;
-
-        beforeEach(async () => {
-          params = this.params();
-          items = await this.controller.getAll(params);
-        });
-
-        it('should be defined', () => {
-          expect(this.controller.getAll).toBeDefined();
-        });
-
-        it('should be called with params', () => {
-          expect(this.service.findAll).toBeCalledWith(params);
-        });
-
-        it('should return item', () => {
-          return expect(this.controller.getAll(params)).resolves.toEqual(items);
-        });
+      it('should be defined', () => {
+        expect(this.controller.getOne).toBeDefined();
       });
 
-      describe('createOne()', () => {
-        let item: T;
-        let params: P;
-        let dto: D;
-
-        beforeEach(async () => {
-          params = this.params();
-          dto = this.dto();
-          item = await this.controller.createOne(params, dto);
-        });
-
-        it('should be defined', () => {
-          expect(this.controller.createOne).toBeDefined();
-        });
-
-        it('should be called with params and dto', () => {
-          expect(this.service.createOne).toBeCalledWith(params, dto);
-        });
-
-        it('should return item', () => {
-          return expect(
-            this.controller.createOne(params, dto),
-          ).resolves.toEqual(item);
-        });
+      it('should be called with params', () => {
+        expect(this.service.findOne).toBeCalledWith(params);
       });
 
-      describe('deleteOne()', () => {
-        let params: P;
+      it('should return item', () => {
+        return expect(this.controller.getOne(params)).resolves.toEqual(item);
+      });
+    });
+  }
 
-        beforeEach(async () => {
-          params = this.params();
-          await this.controller.deleteOne(params);
-        });
+  getAll() {
+    describe('getAll()', () => {
+      let items: T[];
+      let params: P;
 
-        it('should be defined', () => {
-          expect(this.controller.deleteOne).toBeDefined();
-        });
-
-        it('should be called with params', () => {
-          expect(this.service.deleteOne).toBeCalledWith(params);
-        });
-
-        it('should not throw any error', () => {
-          return expect(
-            this.controller.deleteOne(params),
-          ).resolves.not.toThrow();
-        });
+      beforeEach(async () => {
+        params = this.params();
+        items = await this.controller.getAll(params);
       });
 
-      describe('deleteAll()', () => {
-        let params: P;
-
-        beforeEach(async () => {
-          params = this.params();
-          await this.controller.deleteAll(params);
-        });
-
-        it('should be defined', () => {
-          expect(this.controller.deleteAll).toBeDefined();
-        });
-
-        it('should be called with params', () => {
-          expect(this.service.deleteAll).toBeCalledWith(params);
-        });
-
-        it('should not throw any error', () => {
-          return expect(
-            this.controller.deleteAll(params),
-          ).resolves.not.toThrow();
-        });
+      it('should be defined', () => {
+        expect(this.controller.getAll).toBeDefined();
       });
 
-      describe('updateOne()', () => {
-        let item: T;
-        let params: P;
-        let dto: D;
+      it('should be called with params', () => {
+        expect(this.service.findAll).toBeCalledWith(params);
+      });
 
-        beforeEach(async () => {
-          params = this.params();
-          dto = this.dto();
-          item = await this.controller.updateOne(params, dto);
-        });
+      it('should return item', () => {
+        return expect(this.controller.getAll(params)).resolves.toEqual(items);
+      });
+    });
+  }
 
-        it('should be defined', () => {
-          expect(this.controller.updateOne).toBeDefined();
-        });
+  createOne() {
+    describe('createOne()', () => {
+      let item: T;
+      let params: P;
+      let dto: D;
 
-        it('should be called with params and dto', () => {
-          expect(this.service.updateOne).toBeCalledWith(params, dto);
-        });
+      beforeEach(async () => {
+        params = this.params();
+        dto = this.dto();
+        item = await this.controller.createOne(params, dto);
+      });
 
-        it('should return item', () => {
-          return expect(
-            this.controller.createOne(params, dto),
-          ).resolves.toEqual(item);
-        });
+      it('should be defined', () => {
+        expect(this.controller.createOne).toBeDefined();
+      });
+
+      it('should be called with params and dto', () => {
+        expect(this.service.createOne).toBeCalledWith(params, dto);
+      });
+
+      it('should return item', () => {
+        return expect(this.controller.createOne(params, dto)).resolves.toEqual(
+          item,
+        );
+      });
+    });
+  }
+
+  deleteOne() {
+    describe('deleteOne()', () => {
+      let params: P;
+
+      beforeEach(async () => {
+        params = this.params();
+        await this.controller.deleteOne(params);
+      });
+
+      it('should be defined', () => {
+        expect(this.controller.deleteOne).toBeDefined();
+      });
+
+      it('should be called with params', () => {
+        expect(this.service.deleteOne).toBeCalledWith(params);
+      });
+
+      it('should not throw any error', () => {
+        return expect(this.controller.deleteOne(params)).resolves.not.toThrow();
+      });
+    });
+  }
+
+  deleteAll() {
+    describe('deleteAll()', () => {
+      let params: P;
+
+      beforeEach(async () => {
+        params = this.params();
+        await this.controller.deleteAll(params);
+      });
+
+      it('should be defined', () => {
+        expect(this.controller.deleteAll).toBeDefined();
+      });
+
+      it('should be called with params', () => {
+        expect(this.service.deleteAll).toBeCalledWith(params);
+      });
+
+      it('should not throw any error', () => {
+        return expect(this.controller.deleteAll(params)).resolves.not.toThrow();
+      });
+    });
+  }
+
+  updateOne() {
+    describe('updateOne()', () => {
+      let item: T;
+      let params: P;
+      let dto: D;
+
+      beforeEach(async () => {
+        params = this.params();
+        dto = this.dto();
+        item = await this.controller.updateOne(params, dto);
+      });
+
+      it('should be defined', () => {
+        expect(this.controller.updateOne).toBeDefined();
+      });
+
+      it('should be called with params and dto', () => {
+        expect(this.service.updateOne).toBeCalledWith(params, dto);
+      });
+
+      it('should return item', () => {
+        return expect(this.controller.createOne(params, dto)).resolves.toEqual(
+          item,
+        );
       });
     });
   }
