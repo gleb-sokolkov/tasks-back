@@ -30,6 +30,7 @@ import { Comment } from './comments/comments.model';
       database: process.env.POSTGRES_DATABASE,
       models: [User, Role, UserRole, Column, Card, Comment],
       autoLoadModels: true,
+      sync: { force: JSON.parse(process.env.POSTGRES_SYNCHRONIZE) },
     }),
     RouterModule.forRoutes(routes),
     AuthModule,
