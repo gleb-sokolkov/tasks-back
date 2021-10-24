@@ -6,7 +6,6 @@ import { Card } from 'src/cards/cards.model';
 import { User } from 'src/users/users.model';
 import { Comment } from 'src/comments/comments.model';
 import { RestAPIService } from 'src/restAPI/restAPI.interface';
-import { Payload } from 'src/auth/dto/auth.dto';
 
 @Injectable()
 export class CommentsService

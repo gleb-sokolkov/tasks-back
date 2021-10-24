@@ -9,13 +9,15 @@ import {
   Param,
   Post,
   Put,
-  Query,
   UseGuards,
 } from '@nestjs/common';
 import { createCommentDto, findOneParams } from './dto/comments.dto';
 import { AuthGuard } from 'src/auth/auth.guard';
 import { Roles } from 'src/roles/roles.decorator';
-import { AuthParamAndRolesGuard } from 'src/auth/auth-param.guard';
+import {
+  AuthParamAndRolesGuard,
+  AuthParamGuard,
+} from 'src/auth/auth-param.guard';
 import {
   ApiBearerAuth,
   ApiHeader,
@@ -25,8 +27,6 @@ import {
 } from '@nestjs/swagger';
 import { Comment } from './comments.model';
 import { RestAPIRoutes } from 'src/restAPI/restAPI.interface';
-import { Payload } from 'src/auth/dto/auth.dto';
-import { User } from 'src/auth/auth.decorator';
 
 @ApiTags('Комментарии')
 @ApiBearerAuth()
@@ -60,7 +60,7 @@ export class CommentsController
 
   @ApiOperation({ summary: 'Создать новый комментарий' })
   @ApiResponse({ status: HttpStatus.CREATED, type: Comment })
-  @UseGuards(AuthGuard)
+  @UseGuards(AuthGuard, AuthParamGuard)
   @Post()
   @HttpCode(HttpStatus.CREATED)
   async createOne(
@@ -72,7 +72,7 @@ export class CommentsController
 
   @ApiOperation({ summary: 'Удалить один комментарий' })
   @ApiResponse({ status: HttpStatus.OK })
-  @UseGuards(AuthGuard)
+  @UseGuards(AuthGuard, AuthParamGuard)
   @Delete(':comment_id')
   @HttpCode(HttpStatus.OK)
   async deleteOne(@Param() params: findOneParams) {
@@ -91,7 +91,7 @@ export class CommentsController
 
   @ApiOperation({ summary: 'Обновить один комментарий' })
   @ApiResponse({ status: HttpStatus.OK, type: Comment })
-  @UseGuards(AuthGuard)
+  @UseGuards(AuthGuard, AuthParamGuard)
   @Put(':comment_id')
   @HttpCode(HttpStatus.OK)
   async updateOne(
@@ -99,17 +99,5 @@ export class CommentsController
     @Body() dto: createCommentDto,
   ) {
     return this.commentsService.updateOne(params, dto);
-  }
-
-  @UseGuards(AuthGuard)
-  @Post()
-  @HttpCode(HttpStatus.OK)
-  async createOneOpen(
-    @Param() params: findOneParams,
-    @Body() dto: createCommentDto,
-    @Query('state') state: string,
-  ) {
-    console.log(state === 'open');
-    //return this.commentsService.createOne(params, dto);
   }
 }
