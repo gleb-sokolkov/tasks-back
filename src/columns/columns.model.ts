@@ -10,26 +10,14 @@ import {
   HasMany,
 } from 'sequelize-typescript';
 import { Card } from 'src/cards/cards.model';
+import { ModelWithID } from 'src/models/models';
 
 interface columnCreationAttrs {
   name: string;
 }
 
 @Table({ tableName: 'column' })
-export class Column extends Model<Column, columnCreationAttrs> {
-  @ApiProperty({
-    example: '1',
-    description: 'Уникальный идентификатор',
-    type: Number,
-  })
-  @column({
-    type: DataType.INTEGER,
-    unique: true,
-    autoIncrement: true,
-    primaryKey: true,
-  })
-  id: number;
-
+export class Column extends ModelWithID<Column, columnCreationAttrs> {
   @ApiProperty({
     example: 'Колонка1',
     description: 'Имя колонки',
@@ -54,6 +42,6 @@ export class Column extends Model<Column, columnCreationAttrs> {
   @BelongsTo(() => User)
   user: User;
 
-  @HasMany(() => Card)
+  @HasMany(() => Card, { onDelete: 'CASCADE', onUpdate: 'CASCADE' })
   cards: Card[];
 }

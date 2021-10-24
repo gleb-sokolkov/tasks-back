@@ -1,3 +1,4 @@
+import { ModelWithID } from './../models/models';
 import { Role } from './../roles/roles.model';
 import { ApiProperty } from '@nestjs/swagger';
 import {
@@ -5,7 +6,6 @@ import {
   Column,
   DataType,
   HasMany,
-  Model,
   Table,
 } from 'sequelize-typescript';
 import { UserRole } from 'src/roles/user-roles.model';
@@ -18,20 +18,7 @@ interface UserCreationAttrs {
 }
 
 @Table({ tableName: 'user', timestamps: true })
-export class User extends Model<User, UserCreationAttrs> {
-  @ApiProperty({
-    example: '1',
-    description: 'Уникальный идентификатор',
-    type: Number,
-  })
-  @Column({
-    type: DataType.INTEGER,
-    unique: true,
-    autoIncrement: true,
-    primaryKey: true,
-  })
-  id: number;
-
+export class User extends ModelWithID<User, UserCreationAttrs> {
   @ApiProperty({
     example: 'email@email.domain',
     description: 'Почта пользователя',
@@ -60,9 +47,9 @@ export class User extends Model<User, UserCreationAttrs> {
   @BelongsToMany(() => Role, () => UserRole)
   roles: Role[];
 
-  @HasMany(() => column)
+  @HasMany(() => column, { onDelete: 'CASCADE', onUpdate: 'CASCADE' })
   columns: column[];
 
-  @HasMany(() => Comment)
+  @HasMany(() => Comment, { onDelete: 'CASCADE', onUpdate: 'CASCADE' })
   comments: Comment[];
 }

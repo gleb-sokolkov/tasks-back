@@ -16,36 +16,49 @@ export class ColumnsService
   ) {}
 
   async findOne(params: findOneParams) {
-    const user = await this.usersService.findOne(params);
-
-    const column = await user.$get('columns', {
-      where: { id: params.column_id },
+    const column = await this.columnsRepository.findOne({
+      where: {
+        id: params.column_id,
+        user_id: params.user_id,
+      },
       include: [User],
     });
 
-    if (!column[0]) {
+    if (!column) {
       throw new BadRequestException({
         message: `Не удалось найти колонку с id=${params.column_id} пользователя с id=${params.user_id}`,
       });
     } else {
-      return column[0];
+      return column;
     }
   }
 
   async findAll(params: findOneParams) {
-    const user = await this.usersService.findOne(params);
-    return await user.$get('columns', {
+    const columns = await this.columnsRepository.findAll({
+      where: { user_id: params.user_id },
       include: [User],
     });
+
+    if (columns.length === 0) {
+      throw new BadRequestException({
+        message: `Колонок у пользователя с id=${params.user_id} не найдено`,
+      });
+    } else {
+      return columns;
+    }
   }
 
   async createOne(params: findOneParams, dto: createColumnDto) {
     try {
-      const user = await this.usersService.findOne(params);
-      return (await user.$create('column', dto, {
-        include: [User],
-      })) as Column;
+      const column = await this.columnsRepository.create(
+        Object.assign(dto, {
+          user_id: parseInt(params.user_id),
+        }),
+        { include: [User] },
+      );
+      return column;
     } catch (ex) {
+      console.log(ex);
       throw new BadRequestException({
         message: `Пользователя с id=${params.user_id} не существует`,
       });
@@ -53,23 +66,42 @@ export class ColumnsService
   }
 
   async deleteOne(params: findOneParams) {
-    const column = await this.findOne(params);
-    column.destroy();
+    const status = await this.columnsRepository.destroy({
+      where: {
+        id: params.column_id,
+        user_id: params.user_id,
+      },
+    });
+
+    if (!status) {
+      throw new BadRequestException({
+        message: `Колонка с id=${params.column_id} пользователя id=${params.user_id} не найдена`,
+      });
+    }
   }
 
   async deleteAll(params: findOneParams) {
-    const columns = await this.findAll(params);
-    columns.forEach((column) => column.destroy());
+    const status = this.columnsRepository.destroy({
+      where: { user_id: params.user_id },
+    });
+
+    if (!status) {
+      throw new BadRequestException({
+        message: `Колонок в у пользователя с id=${params.user_id} не найдено`,
+      });
+    }
   }
 
   async updateOne(params: findOneParams, dto: createColumnDto) {
-    await this.findOne(params);
     try {
-      const column = await this.findOne(params);
-      for (const [key, value] of Object.entries(dto)) {
-        column[key] = value;
-      }
-      return await column.save();
+      const result = await this.columnsRepository.update(dto, {
+        where: {
+          id: params.column_id,
+          user_id: params.user_id,
+        },
+        returning: true,
+      });
+      return result[1][0];
     } catch (ex) {
       throw new BadRequestException({
         message: `Не удалось обновить колонку с id=${params.column_id} пользователя с id=${params.user_id}`,

@@ -10,6 +10,7 @@ import {
 } from 'sequelize-typescript';
 import { Column } from 'src/columns/columns.model';
 import { Comment } from 'src/comments/comments.model';
+import { ModelWithID } from 'src/models/models';
 
 interface createCardAttrs {
   name: string;
@@ -17,21 +18,7 @@ interface createCardAttrs {
 }
 
 @Table({ tableName: 'card' })
-export class Card extends Model<Card, createCardAttrs> {
-  @ApiProperty({
-    example: '74',
-    description: 'Уникальный идентификатор',
-    nullable: false,
-    type: Number,
-  })
-  @column({
-    type: DataType.INTEGER,
-    unique: true,
-    autoIncrement: true,
-    primaryKey: true,
-  })
-  id: number;
-
+export class Card extends ModelWithID<Card, createCardAttrs> {
   @ApiProperty({
     example: 'todo something',
     description: 'Имя карточки',
@@ -68,6 +55,6 @@ export class Card extends Model<Card, createCardAttrs> {
   @column({ type: DataType.INTEGER, allowNull: false })
   column_id: number;
 
-  @HasMany(() => Comment)
+  @HasMany(() => Comment, { onDelete: 'CASCADE', onUpdate: 'CASCADE' })
   comments: Comment[];
 }
